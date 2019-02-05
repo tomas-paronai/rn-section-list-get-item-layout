@@ -27,7 +27,8 @@ export interface Parameters {
   getSeparatorHeight?: (sectionIndex: number, rowIndex: number) => number
   getSectionHeaderHeight?: (sectionIndex: number) => number
   getSectionFooterHeight?: (sectionIndex: number) => number
-  listHeaderHeight?: number | (() => number)
+  listHeaderHeight?: number | (() => number),
+  fontScale?: number
 }
 
 export default ({
@@ -36,6 +37,7 @@ export default ({
   getSectionHeaderHeight = () => 0,
   getSectionFooterHeight = () => 0,
   listHeaderHeight = 0,
+  fontScale = 1
 }: Parameters) => (data: SectionListDataProp, index: number) => {
   let i = 0
   let sectionIndex = 0
@@ -50,7 +52,7 @@ export default ({
       case 'SECTION_HEADER': {
         const sectionData = data[sectionIndex].data
 
-        offset += getSectionHeaderHeight(sectionIndex)
+        offset += Math.round(getSectionHeaderHeight(sectionIndex) * fontScale)
 
         // If this section is empty, we go right to the footer...
         if (sectionData.length === 0) {
@@ -67,7 +69,7 @@ export default ({
 
         const rowIndex = elementPointer.index
 
-        offset += getItemHeight(sectionData[rowIndex], sectionIndex, rowIndex)
+        offset += Math.round(getItemHeight(sectionData[rowIndex], sectionIndex, rowIndex) * fontScale)
         elementPointer.index += 1
 
         if (rowIndex === sectionData.length - 1) {
@@ -92,15 +94,15 @@ export default ({
   let length
   switch (elementPointer.type) {
     case 'SECTION_HEADER':
-      length = getSectionHeaderHeight(sectionIndex)
+      length = Math.round(getSectionHeaderHeight(sectionIndex) * fontScale)
       break
     case 'ROW':
       const rowIndex = elementPointer.index
-      length = getItemHeight(
+      length = Math.round(getItemHeight(
         data[sectionIndex].data[rowIndex],
         sectionIndex,
         rowIndex,
-      )
+      ) * fontScale)
       break
     case 'SECTION_FOOTER':
       length = getSectionFooterHeight(sectionIndex)
